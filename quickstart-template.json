@@ -19,7 +19,7 @@
     {
       "name": "GIT_REPO",
       "required": true,
-      "description": "Git repository, required",
+      "description": "Git repository",
       "value": "https://github.com/DeGup/camel-cdi-quickstart"
     },
     {
