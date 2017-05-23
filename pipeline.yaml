@@ -54,7 +54,7 @@ objects:
               def gitBranch = "${GIT_REF}"
               def mavenMirror = "${env.MAVEN_MIRROR_URL}"
               checkout([$class: "GitSCM", branches: [[name: "*/${gitBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: "RelativeTargetDirectory", relativeTargetDir: "camel-cdi-quickstart"]], submoduleCfg: [], userRemoteConfigs: [[url: "${gitUrl}"]]])
-              sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} --env MAVEN_MIRROR_URL=${mavenMirror}-n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+              sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
             }
 
             stage('Build App') {
