@@ -223,10 +223,10 @@
       "kind": "DeploymentConfig",
       "apiVersion": "v1",
       "metadata": {
-        "name": "${APP_NAME}",
+        "name": "${APP_NAME}-test",
         "creationTimestamp": null,
         "labels": {
-          "component": "${APP_NAME}",
+          "component": "${APP_NAME}-test",
           "container": "java",
           "group": "quickstarts",
           "project": "${APP_NAME}",
@@ -258,9 +258,9 @@
         ],
         "replicas": 1,
         "selector": {
-          "component": "${APP_NAME}",
+          "component": "${APP_NAME}-test",
           "container": "java",
-          "deploymentconfig": "${APP_NAME}",
+          "deploymentconfig": "${APP_NAME}-test",
           "group": "quickstarts",
           "project": "${APP_NAME}",
           "provider": "s2i",
@@ -270,9 +270,9 @@
           "metadata": {
             "creationTimestamp": null,
             "labels": {
-              "component": "${APP_NAME}",
+              "component": "${APP_NAME}-test",
               "container": "java",
-              "deploymentconfig": "${APP_NAME}",
+              "deploymentconfig": "${APP_NAME}-test",
               "group": "quickstarts",
               "project": "${APP_NAME}",
               "provider": "s2i",
@@ -282,7 +282,7 @@
           "spec": {
             "containers": [
               {
-                "name": "${APP_NAME}",
+                "name": "${APP_NAME}-test",
                 "image": "library/${APP_NAME}:latest",
                 "readinessProbe": {
                   "exec": {
@@ -309,6 +309,99 @@
         }
       },
       "status": {}
+    },
+
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}-acceptance",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "${APP_NAME}-acceptance",
+          "container": "java",
+          "group": "quickstarts",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${APP_NAME}-acceptance"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "${APP_NAME}:acceptance"
+              }
+            }
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "component": "${APP_NAME}",
+          "container": "java",
+          "deploymentconfig": "${APP_NAME}-acceptance",
+          "group": "quickstarts",
+          "project": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "component": "${APP_NAME}-acceptance",
+              "container": "java",
+              "deploymentconfig": "${APP_NAME}-acceptance",
+              "group": "quickstarts",
+              "project": "${APP_NAME}",
+              "provider": "s2i",
+              "version": "${APP_VERSION}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "${APP_NAME}-acceptance",
+                "image": "library/${APP_NAME}:acceptance",
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "/bin/bash",
+                      "-c",
+                      "(curl -f 127.0.0.1:8778) >/dev/null 2>&1; test $? != 7"
+                    ]
+                  },
+                  "initialDelaySeconds": 30,
+                  "timeoutSeconds": 5
+                },
+                "ports": [
+                  {
+                    "containerPort": 8778,
+                    "name": "jolokia",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {}
+              }
+            ]
+          }
+        }
+      },
+      "status": {}
     }
+
   ]
 }
