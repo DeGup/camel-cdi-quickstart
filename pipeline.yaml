@@ -41,6 +41,13 @@ objects:
         jenkinsfile: |-
           def project = ""
           node {
+
+            stage('Clean workspace'){
+              dir('camel-cdi-quickstart') {
+                deleteDir()
+              }
+            }
+
             project = "${env.PROJECT_NAME}"
             stage('Create app') {
               def gitUrl = "${GIT_URI}"
