@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Template
 labels:
-  application: camel-cdi-pipeline
+  application: camel-cdi-pipeline-split
 metadata:
-  name: camel-cdi-pipeline
+  name: camel-cdi-pipeline-split
 parameters:
 - description: Source URI
   displayName: Source URI
@@ -30,8 +30,8 @@ objects:
   kind: BuildConfig
   metadata:
     labels:
-      build: camel-cdi-pipeline
-    name: camel-cdi-pipeline
+      build: camel-cdi-pipeline-split
+    name: camel-cdi-pipeline-split
   spec:
     runPolicy: Serial
     source: {}

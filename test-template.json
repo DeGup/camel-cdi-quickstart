@@ -8,7 +8,7 @@
       "iconClass": "icon-java"
     },
     "labels": {},
-    "name": "s2i-quickstart-cdi-camel - Test"
+    "name": "s2i-quickstart-cdi-camel-Test"
   },
   "parameters": [
     {
