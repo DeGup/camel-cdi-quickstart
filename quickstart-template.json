@@ -17,7 +17,7 @@
       "description": "Application Name"
     },
     {
-      "name": "GIT_REPO",
+      "name": "GIT_URI",
       "required": true,
       "description": "Git repository",
       "value": "https://github.com/DeGup/camel-cdi-quickstart"
@@ -164,7 +164,7 @@
         "source": {
           "type": "Git",
           "git": {
-            "uri": "${GIT_REPO}",
+            "uri": "${GIT_URI}",
             "ref": "${GIT_REF}"
           }
         },
