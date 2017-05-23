@@ -39,33 +39,52 @@ objects:
       type: JenkinsPipeline
       jenkinsPipelineStrategy:
         jenkinsfile: |-
-          def project = ""
-          node {
+         def project = ""
+         node {
 
-            stage('Clean workspace'){
-              dir('camel-cdi-quickstart') {
-                deleteDir()
-              }
+          stage('Clean workspace'){
+            dir('camel-cdi-quickstart') {
+              deleteDir()
             }
+          }
 
-            project = "${env.PROJECT_NAME}"
-            stage('Create app') {
-              def gitUrl = "${GIT_URI}"
-              def gitBranch = "${GIT_REF}"
-              def mavenMirror = "${env.MAVEN_MIRROR_URL}"
-              checkout([$class: "GitSCM", branches: [[name: "*/${gitBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: "RelativeTargetDirectory", relativeTargetDir: "camel-cdi-quickstart"]], submoduleCfg: [], userRemoteConfigs: [[url: "${gitUrl}"]]])
-              sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
-            }
+          project = "${env.PROJECT_NAME}"
+          stage('Create app') {
+            def gitUrl = "https://github.com/DeGup/camel-cdi-quickstart.git"
+            def gitBranch = "master"
+            def mavenMirror = "http://nexus-ci.10.240.106.249.xip.io/nexus/content/groups/public/"
+            checkout([$class: "GitSCM", branches: [[name: "*/${gitBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: "RelativeTargetDirectory", relativeTargetDir: "camel-cdi-quickstart"]], submoduleCfg: [], userRemoteConfigs: [[url: "${gitUrl}"]]])
+            sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+          }
 
-            stage('Build App') {
-              parallel (
-                "App": {
-                  node {
-                    openshiftBuild buildConfig: "s2i-quickstart-cdi-camel", namespace: project
-                  }
+          stage('Build App') {
+            parallel (
+              "App": {
+                node {
+                  openshiftBuild buildConfig: "s2i-quickstart-cdi-camel", namespace: project
                 }
-                )
+              }
+              )
+          }
+
+          stage('Verify deployment on Test') {
+            node {
+              openshiftVerifyDeployment deploymentConfig: "s2i-quickstart-cdi-camel-test", replicaCount: "1"
             }
+          }
+
+          stage('Tag for Acc') {
+            node {
+             openshiftTag srcStream: "s2i-quickstart-cdi-camel", srcTag: "latest", destStream: "s2i-quickstart-cdi-camel", destTag: "latest, acceptance"
+           }
+         }
+
+         stage('Verify deployment on Acc') {
+          node {
+            openshiftVerifyDeployment deploymentConfig: "s2i-quickstart-cdi-camel-acceptance", replicaCount: "1"
+          }
+         }
+
     triggers:
     - github:
         secret: ${GITHUB_TRIGGER_SECRET}

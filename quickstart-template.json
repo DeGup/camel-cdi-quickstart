@@ -84,13 +84,13 @@
         },
         "labels": {
           "container": "java",
-          "component": "${APP_NAME}",
+          "component": "${APP_NAME}-test",
           "provider": "s2i",
           "project": "${APP_NAME}",
           "version": "${APP_VERSION}",
           "group": "quickstarts"
         },
-        "name": "${SERVICE_NAME}"
+        "name": "${SERVICE_NAME}-test"
       },
       "spec": {
         "clusterIP": "None",
@@ -103,7 +103,42 @@
         "selector": {
           "container": "java",
           "project": "${APP_NAME}",
-          "component": "${APP_NAME}",
+          "component": "${APP_NAME}-test",
+          "provider": "s2i",
+          "group": "quickstarts"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "prometheus.io/port": "9779",
+          "prometheus.io/scrape": "true"
+        },
+        "labels": {
+          "container": "java",
+          "component": "${APP_NAME}-acceptance",
+          "provider": "s2i",
+          "project": "${APP_NAME}",
+          "version": "${APP_VERSION}",
+          "group": "quickstarts"
+        },
+        "name": "${SERVICE_NAME}-acceptance"
+      },
+      "spec": {
+        "clusterIP": "None",
+        "deprecatedPublicIPs": [],
+        "ports": [
+          {
+            "port": 1
+          }
+        ],
+        "selector": {
+          "container": "java",
+          "project": "${APP_NAME}",
+          "component": "${APP_NAME}-acceptance",
           "provider": "s2i",
           "group": "quickstarts"
         }
