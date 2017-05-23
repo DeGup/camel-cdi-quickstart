@@ -24,7 +24,7 @@
         <mirror>
             <id>public2</id>
             <name>Assorted Public Repositories</name>
-            <url>${env.MAVEN_MIRROR_URL}</url>
+            <url>${MAVEN_MIRROR_URL}</url>
             <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
