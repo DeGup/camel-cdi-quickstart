@@ -27,12 +27,6 @@
       "name": "APP_VERSION",
       "value": "2.2.0.redhat-079",
       "description": "Application version"
-    },
-
-    {
-      "name": "MAVEN_MIRROR_URL",
-      "description": "Maven Mirror URL",
-      "required": true
     }
 
   ],
