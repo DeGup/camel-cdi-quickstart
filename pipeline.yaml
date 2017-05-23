@@ -49,15 +49,15 @@ objects:
               sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
             }
 
-          stage('Build App') {
-            parallel (
-              "App": {
-                node {
-                  openshiftBuild buildConfig: "s2i-quickstart-cdi-camel", namespace: project
+            stage('Build App') {
+              parallel (
+                "App": {
+                  node {
+                    openshiftBuild buildConfig: "s2i-quickstart-cdi-camel", namespace: project
+                  }
                 }
-              }
-            )
-          }
+                )
+            }
     triggers:
     - github:
         secret: ${GITHUB_TRIGGER_SECRET}
