@@ -60,11 +60,11 @@ objects:
 
            // setup test project
            sh "oc project test"
-           sh "oc new-app -f camel-cdi-quickstart/test-template.json p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+           sh "oc new-app -f camel-cdi-quickstart/test-template.json -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
 
             // setup acc project
             sh "oc project acceptance"
-            sh "oc new-app -f camel-cdi-quickstart/acc-template.json p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+            sh "oc new-app -f camel-cdi-quickstart/acc-template.json -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
 
            // back to ci for building
             // sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
