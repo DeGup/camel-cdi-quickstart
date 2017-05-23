@@ -48,6 +48,11 @@
       "description": "Arguments passed to mvn in the build"
     },
     {
+      "name": "MAVEN_MIRROR_URL",
+      "required": true,
+      "description": "Maven Mirror Url"
+    },
+    {
       "name": "MAVEN_ARGS_APPEND",
       "description": "Extra arguments passed to mvn, e.g. for multi-module builds"
     },
