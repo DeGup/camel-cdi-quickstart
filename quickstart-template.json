@@ -247,7 +247,7 @@
             "imageChangeParams": {
               "automatic": true,
               "containerNames": [
-                "${APP_NAME}"
+                "${APP_NAME}-test"
               ],
               "from": {
                 "kind": "ImageStreamTag",
@@ -350,7 +350,7 @@
         ],
         "replicas": 1,
         "selector": {
-          "component": "${APP_NAME}",
+          "component": "${APP_NAME}-acceptance",
           "container": "java",
           "deploymentconfig": "${APP_NAME}-acceptance",
           "group": "quickstarts",
