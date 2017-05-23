@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Template
+labels:
+  application: camel-cdi-pipeline
+metadata:
+  name: camel-cdi-pipeline
+parameters:
+- description: Source URI
+  displayName: Source URI
+  name: GIT_URI
+  required: true
+  value: https://github.com/DeGup/camel-cdi-quickstart.git
+- description: Branch
+  displayName: Branch
+  name: GIT_REF
+  required: true
+  value: master
+- name: GITHUB_WEBHOOK_SECRET
+  displayName: GitHub Webhook Secret
+  description: A secret string used to configure the GitHub webhook.
+  generate: expression
+  from: "[a-zA-Z0-9]{40}"
+- name: GENERIC_WEBHOOK_SECRET
+  displayName: Generic Webhook Secret,
+  description: A secret string used to configure the Generic webhook.
+  generate: expression
+  from: "[a-zA-Z0-9]{40}"
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      build: camel-cdi-pipeline
+    name: camel-cdi-pipeline
+  spec:
+    runPolicy: Serial
+    source: {}
+    strategy:
+      type: JenkinsPipeline
+      jenkinsPipelineStrategy:
+        jenkinsfile: |-
+         def project = ""
+         node {
+
+          stage('Clean workspace'){
+            dir('camel-cdi-quickstart') {
+              deleteDir()
+            }
+          }
+
+          project = "${env.PROJECT_NAME}"
+          stage('Create app') {
+            def gitUrl = "https://github.com/DeGup/camel-cdi-quickstart.git"
+            def gitBranch = "master"
+            def mavenMirror = "http://nexus-ci.10.240.106.249.xip.io/nexus/content/groups/public/"
+            checkout([$class: "GitSCM", branches: [[name: "*/${gitBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: "RelativeTargetDirectory", relativeTargetDir: "camel-cdi-quickstart"]], submoduleCfg: [], userRemoteConfigs: [[url: "${gitUrl}"]]])
+            // setup ci and build
+            sh "oc project ci"
+            sh "oc new-app -f camel-cdi-quickstart/ci-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+
+           // setup test project
+           sh "oc project test"
+           sh "oc new-app -f camel-cdi-quickstart/test-template.json p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+
+            // setup acc project
+            sh "oc project acceptance"
+            sh "oc new-app -f camel-cdi-quickstart/acc-template.json p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+
+           // back to ci for building
+            // sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+          }
+
+          stage('Build App') {
+            parallel (
+              "App": {
+                node {
+                 sh "oc project ci"
+                 openshiftBuild buildConfig: "s2i-quickstart-cdi-camel", namespace: project
+               }
+             }
+             )
+          }
+
+          stage('Verify deployment on Test') {
+            node {
+              openshiftVerifyDeployment deploymentConfig: "s2i-quickstart-cdi-camel-test", replicaCount: "1", namespace: "test"
+            }
+          }
+
+          stage('Tag for Acc') {
+            node {
+             openshiftTag srcStream: "s2i-quickstart-cdi-camel", srcTag: "latest", destStream: "s2i-quickstart-cdi-camel", destTag: "latest, acceptance"
+           }
+         }
+
+         stage('Verify deployment on Acc') {
+          node {
+            openshiftVerifyDeployment deploymentConfig: "s2i-quickstart-cdi-camel-acceptance", replicaCount: "1", namespace: "acceptance"
+          }
+         }
+         }
+    triggers:
+    - github:
+        secret: ${GITHUB_TRIGGER_SECRET}
+      type: GitHub
+    - generic:
+        secret: ${GENERIC_TRIGGER_SECRET}
+      type: Generic
