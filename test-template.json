@@ -99,6 +99,7 @@
               ],
               "from": {
                 "kind": "ImageStreamTag",
+                "namespace": "ci",
                 "name": "${APP_NAME}:latest"
               }
             }
