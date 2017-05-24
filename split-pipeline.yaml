@@ -25,6 +25,10 @@ parameters:
   description: A secret string used to configure the Generic webhook.
   generate: expression
   from: "[a-zA-Z0-9]{40}"
+- description: Maven Mirror / Nexus
+  dipslayName: Maven Mirror or Nexus URL
+  name: MAVEN_MIRROR_URL
+  required: true
 objects:
 - apiVersion: v1
   kind: BuildConfig
@@ -52,7 +56,7 @@ objects:
           stage('Create app') {
             def gitUrl = "https://github.com/DeGup/camel-cdi-quickstart.git"
             def gitBranch = "master"
-            def mavenMirror = "http://nexus-ci.10.240.106.249.xip.io/nexus/content/groups/public/"
+            def mavenMirror = "${MAVEN_MIRROR_URL}"
             checkout([$class: "GitSCM", branches: [[name: "*/${gitBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: "RelativeTargetDirectory", relativeTargetDir: "camel-cdi-quickstart"]], submoduleCfg: [], userRemoteConfigs: [[url: "${gitUrl}"]]])
             // setup ci and build
             sh "oc project ci"
