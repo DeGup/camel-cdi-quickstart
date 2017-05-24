@@ -44,6 +44,7 @@ objects:
       jenkinsPipelineStrategy:
         jenkinsfile: |-
          def project = ""
+         def now = System.currentTimeMillis()
          node {
 
           stage('Clean workspace'){
@@ -83,11 +84,19 @@ objects:
              )
           }
 
+          stage('Tag with id') {
+            openshiftTag srcStream: "s2i-quickstart-cdi-camel", srcTag: "latest", destStream: "s2i-quickstart-cdi-camel", destTag: "${now}"
+          }
+
           stage('Verify deployment on Test') {
             node {
               openshiftVerifyDeployment deploymentConfig: "s2i-quickstart-cdi-camel-test", replicaCount: "1", namespace: "test"
             }
           }
+
+         stage('Deploy to A'){
+             input message: "Promote to A?", ok: "YES"
+         }
 
           stage('Tag for Acc') {
             node {
