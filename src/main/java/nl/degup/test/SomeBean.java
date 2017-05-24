@@ -25,6 +25,6 @@ public class SomeBean {
     private int counter;
 
     public String someMethod(String body) {
-        return "Saying Hello World " + ++counter + " times";
+        return "Saying HIHI :) " + ++counter + " times";
     }
 }

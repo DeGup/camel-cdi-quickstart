@@ -57,6 +57,9 @@ objects:
         // enable acceptance to pull form ci
         // sh "oc policy add-role-to-group system:image-puller system:serviceaccounts:acceptance -n ci"
 
+        // add image streams to ci
+        // sh "oc create -f fis-image-streams.json"
+
          def project = ""
          node {
 
