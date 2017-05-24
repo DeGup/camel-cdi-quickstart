@@ -43,6 +43,20 @@ objects:
       type: JenkinsPipeline
       jenkinsPipelineStrategy:
         jenkinsfile: |-
+
+        // create test project
+        // create acceptance project
+        // add jenkins service account to test so it can create / modify stuff if needed
+        // oc TODO
+        // add jenkins service account to acceptance so it can create modify stuff if needed
+        // oc TODO
+
+        // enable test to pull from ci
+        // sh "oc policy add-role-to-group system:image-puller system:serviceaccounts:test -n ci"
+
+        // enable acceptance to pull form ci
+        // sh "oc policy add-role-to-group system:image-puller system:serviceaccounts:acceptance -n ci"
+
          def project = ""
          node {
 
@@ -64,14 +78,12 @@ objects:
 
            // setup test project
            sh "oc project test"
-           sh "oc new-app -f camel-cdi-quickstart/test-template.json -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+           sh "oc new-app -f camel-cdi-quickstart/test-template.json -n test --dry-run -o yaml | oc apply -f - -n test"
 
             // setup acc project
             sh "oc project acceptance"
-            sh "oc new-app -f camel-cdi-quickstart/acc-template.json -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
+            sh "oc new-app -f camel-cdi-quickstart/acc-template.json -n acceptance --dry-run -o yaml | oc apply -f - -n acceptance"
 
-           // back to ci for building
-            // sh "oc new-app -f camel-cdi-quickstart/quickstart-template.json -p GIT_URI=${gitUrl} -p GIT_REF=${gitBranch} -p MAVEN_MIRROR_URL=${mavenMirror} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}"
           }
 
           stage('Build App') {
