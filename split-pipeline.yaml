@@ -43,23 +43,6 @@ objects:
       type: JenkinsPipeline
       jenkinsPipelineStrategy:
         jenkinsfile: |-
-
-        // create test project
-        // create acceptance project
-        // add jenkins service account to test so it can create / modify stuff if needed
-        // oc TODO
-        // add jenkins service account to acceptance so it can create modify stuff if needed
-        // oc TODO
-
-        // enable test to pull from ci
-        // sh "oc policy add-role-to-group system:image-puller system:serviceaccounts:test -n ci"
-
-        // enable acceptance to pull form ci
-        // sh "oc policy add-role-to-group system:image-puller system:serviceaccounts:acceptance -n ci"
-
-        // add image streams to ci
-        // sh "oc create -f fis-image-streams.json"
-
          def project = ""
          node {
 
