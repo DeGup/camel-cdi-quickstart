@@ -17,10 +17,13 @@ package nl.degup.test;
 
 import javax.inject.Inject;
 
+import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.Endpoint;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
+
+import static org.apache.camel.LoggingLevel.INFO;
 
 /**
  * Configures all our Camel routes, components, endpoints and beans
@@ -40,9 +43,15 @@ public class MyRoutes extends RouteBuilder {
     public void configure() throws Exception {
         // you can configure the route rule with Java DSL here
 
+        getContext().addComponent("activemq", ActiveMQComponent.activeMQComponent("vm://localhost?broker.persistent=false"));
+
         from(inputEndpoint)
             .beanRef("counterBean")
-            .to(resultEndpoint);
+            .to("activemq:queue:test");
+
+        from("activemq:queue:test")
+                .log(INFO,"Got message on queue: ${body}")
+                .to(resultEndpoint);
     }
 
 }
