@@ -33,3 +33,4 @@ Enable test and acceptance to pull images from ci namespace:
     oc policy add-role-to-group system:image-puller system:serviceaccounts:acceptance -n ci
        
 Pipeline can be trigger via git hooks or manually. 
+
