@@ -39,6 +39,10 @@ public class MyRoutes extends RouteBuilder {
     @Uri("log:output")
     private Endpoint resultEndpoint;
 
+    @Inject
+    @Uri("activemq:queue:test")
+    private Endpoint queueEndpoint;
+
     @Override
     public void configure() throws Exception {
         // you can configure the route rule with Java DSL here
@@ -49,7 +53,7 @@ public class MyRoutes extends RouteBuilder {
                 .log(INFO, "Sending counter to queue")
                 .to("activemq:queue:test");
 
-        from("activemq:queue:test")
+        from(queueEndpoint)
                 .log(INFO, "Got message on queue: ${body}")
                 .to(resultEndpoint);
     }
