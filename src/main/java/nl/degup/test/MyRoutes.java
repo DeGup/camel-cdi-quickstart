@@ -75,7 +75,10 @@ public class MyRoutes extends RouteBuilder {
         ActiveMQConfiguration configuration = new ActiveMQConfiguration();
         configuration.setConnectionFactory(factory);
 
-        return new ActiveMQComponent(configuration);
+
+        ActiveMQComponent activeMQComponent = new ActiveMQComponent(configuration);
+        System.out.println("Setting config to: " + activeMQComponent);
+        return activeMQComponent;
     }
 
 }
