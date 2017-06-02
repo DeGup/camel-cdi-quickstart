@@ -65,12 +65,12 @@ public class MyRoutes extends RouteBuilder {
 
     @Named("activemq")
     public ActiveMQComponent createActiveMQComponent() throws  Exception{
-        ActiveMQSslConnectionFactory factory = new ActiveMQSslConnectionFactory("failover://ssl://broker-amq-tcp-ssl-test.149.202.62.62.xip.io:443");
+        ActiveMQSslConnectionFactory factory = new ActiveMQSslConnectionFactory("failover://ssl://BROKER:443");
         factory.setUserName("admin");
         factory.setPassword("admin");
 
-        factory.setTrustStore("amq-client.ts");
-        factory.setTrustStorePassword("zEEbEEst");
+        factory.setTrustStore("REPLACE_ME");
+        factory.setTrustStorePassword("REPLACE_ME");
 
         ActiveMQConfiguration configuration = new ActiveMQConfiguration();
         configuration.setConnectionFactory(factory);
