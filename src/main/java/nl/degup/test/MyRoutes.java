@@ -16,8 +16,13 @@
 package nl.degup.test;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jms.ConnectionFactory;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.activemq.camel.component.ActiveMQConfiguration;
 import org.apache.camel.Endpoint;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.ContextName;
@@ -56,6 +61,21 @@ public class MyRoutes extends RouteBuilder {
         from(queueEndpoint)
                 .log(INFO, "Got message on queue: ${body}")
                 .to(resultEndpoint);
+    }
+
+    @Named("activemq")
+    public ActiveMQComponent createActiveMQComponent() throws  Exception{
+        ActiveMQSslConnectionFactory factory = new ActiveMQSslConnectionFactory("failover://ssl://broker-amq-tcp-ssl-test.149.202.62.62.xip.io:443");
+        factory.setUserName("admin");
+        factory.setPassword("admin");
+
+        factory.setTrustStore("amq-client.ts");
+        factory.setTrustStorePassword("zEEbEEst");
+
+        ActiveMQConfiguration configuration = new ActiveMQConfiguration();
+        configuration.setConnectionFactory(factory);
+
+        return new ActiveMQComponent(configuration);
     }
 
 }
