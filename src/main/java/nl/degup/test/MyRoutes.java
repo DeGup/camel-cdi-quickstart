@@ -43,7 +43,7 @@ public class MyRoutes extends RouteBuilder {
     public void configure() throws Exception {
         // you can configure the route rule with Java DSL here
 
-        getContext().addComponent("activemq", ActiveMQComponent.activeMQComponent("vm://localhost?broker.persistent=false"));
+
 
         from(inputEndpoint)
             .beanRef("counterBean")
