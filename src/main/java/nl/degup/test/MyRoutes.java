@@ -45,7 +45,7 @@ public class MyRoutes extends RouteBuilder {
     private Endpoint resultEndpoint;
 
     @Inject
-    @Uri("activemq:queue:test")
+    @Uri("direct:test")
     private Endpoint queueEndpoint;
 
     @Override
@@ -56,29 +56,10 @@ public class MyRoutes extends RouteBuilder {
         from(inputEndpoint)
                 .beanRef("counterBean")
                 .log(INFO, "Sending counter to queue")
-                .to("activemq:queue:test");
+                .to(queueEndpoint);
 
         from(queueEndpoint)
                 .log(INFO, "Got message on queue: ${body}")
                 .to(resultEndpoint);
     }
-
-    @Named("activemq")
-    public ActiveMQComponent createActiveMQComponent() throws  Exception{
-        ActiveMQSslConnectionFactory factory = new ActiveMQSslConnectionFactory("failover://ssl://BROKER:443");
-        factory.setUserName("admin");
-        factory.setPassword("admin");
-
-        factory.setTrustStore("REPLACE_ME");
-        factory.setTrustStorePassword("REPLACE_ME");
-
-        ActiveMQConfiguration configuration = new ActiveMQConfiguration();
-        configuration.setConnectionFactory(factory);
-
-
-        ActiveMQComponent activeMQComponent = new ActiveMQComponent(configuration);
-        System.out.println("Setting config to: " + activeMQComponent);
-        return activeMQComponent;
-    }
-
 }
